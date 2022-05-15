@@ -1,0 +1,81 @@
+.md-region {
+    .tip {
+        @apply bg-mint-600 bg-opacity-40 p-5 my-5;
+
+        &> h2:first-child {
+            @apply block text-base italic text-mint-900 font-bold mb-1
+        }
+    }
+    
+    .aside {
+        @apply bg-vodka-600 bg-opacity-40 p-5 my-5;
+        &> h2:first-child {
+            @apply block text-base italic text-vodka-900 font-bold mb-1
+        }
+    }
+    
+    .important {
+        @apply bg-thistle-500 bg-opacity-40 p-5 my-5;
+        
+        &> h2:first-child {
+            @apply block text-base italic text-thistle-900 font-bold mb-1
+        }
+    }
+}
+
+.box-abstract {
+    @apply bg-paper-500 bg-opacity-40 p-5 my-5
+}
+
+.md-region {
+    &> h1 {
+        counter-increment: h1counter;
+        counter-reset: h2counter;
+        @apply text-2xl mt-12 mb-1 text-center small-caps font-bold;
+
+        &::before {
+            content: counter(h1counter) '. ';
+        }
+    }
+
+    &> h2 {
+        counter-increment: h2counter;
+        counter-reset: h3counter;
+        @apply text-xl mt-8 mb-1 font-bold;
+        
+        &::before {
+            content: counter(h1counter) '.' counter(h2counter) '. ';
+        }
+    }
+
+    &> h3 {
+        counter-increment: h3counter;
+        counter-reset: h4counter;
+        @apply text-lg mt-4 mb-1 font-bold;
+
+        &::before {
+            content: counter(h1counter) '.' counter(h2counter) '.' counter(h3counter) '. ';
+        }
+    }
+
+    &> h4 {
+        counter-increment: h4counter;
+        @apply text-lg mt-4 mb-1 italic font-bold;
+
+        &::before {
+            content: counter(h1counter) '.' counter(h2counter) '.' counter(h3counter) '.' counter(h4counter) '. ';
+        }
+    }
+
+    &> h5, &> h6 {
+        @apply text-base mt-4 mb-1 italic
+    }
+
+    &> blockquote {
+        @apply italic bg-paper-300 bg-opacity-60 p-5 my-5 px-10
+    }
+
+    &> svg, &> img {
+        @apply mx-auto my-10
+    }
+}

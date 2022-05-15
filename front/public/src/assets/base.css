@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    src: url('@/assets/fonts/cmunrm.ttf') format('truetype');
+    font-family: "Serif Roman";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    src: url('@/assets/fonts/cmunti.ttf') format('truetype');
+    font-family: "Serif Roman";
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    src: url('@/assets/fonts/kaiti.ttf') format('truetype');
+    font-family: "Noto Serif SC";
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@layer base {
+    html {
+        @apply bg-paper-400
+    }
+
+    *::selection {
+        @apply bg-black text-white !important;
+    }
+
+    p, a, span {
+        @apply text-black;
+    }
+}
+
+@layer utilities {
+    .small-caps {
+        font-variant: small-caps;
+    }
+}
+
+#app {
+    @apply min-h-screen
+}
