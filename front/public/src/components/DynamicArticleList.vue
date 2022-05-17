@@ -3,14 +3,14 @@ import type { ArticleMetadata } from '@/helpers';
 import { ref, computed, reactive, watch, watchEffect, onMounted, inject } from 'vue';
 import AsyncContent from './AsyncContent.vue';
 import ArticleList from './ArticleList.vue';
-import { api, type ApiProxy } from '@/api';
+import { api, ApiProxyKey, type ApiProxy } from '@/api';
 import useScroll from '@/composables/useScroll';
 
 const props = defineProps<{
     params?: Record<string, any>
 }>()
 
-const proxy: ApiProxy = inject("api-proxy") as ApiProxy
+const proxy: ApiProxy = inject(ApiProxyKey) as ApiProxy
 
 const fetchState: {
     offset: number;
@@ -24,10 +24,10 @@ const fetchState: {
 
 const fetchArticle = async () => {
     const fetchedList = 
-        await proxy<ArticleMetadata[]>(api.gateway.get(api.v1.articles(), {
+        (await proxy(api.v1.article().get<ArticleMetadata[]>({
             ...props.params,
             offset: fetchState.offset
-        }), [])
+        }), []))!
 
     fetchState.articles.push(...fetchedList)
     fetchState.changes = fetchedList.length

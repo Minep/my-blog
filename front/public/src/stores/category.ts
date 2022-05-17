@@ -12,7 +12,7 @@ export const useCategoryStore = defineStore({
   },
   actions: {
     async navigateTo (cid: string): Promise<CategoryLevel> {
-      const result = await api.gateway.get<CategoryLevel>(api.v1.category(cid));
+      const result = await api.v1.category(cid).get<CategoryLevel>();
       this.current = result.payload
       return result.payload as CategoryLevel
     }

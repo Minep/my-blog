@@ -8,6 +8,14 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["markdown-it", "markdown-it-container", "axios", "miragejs", "node", "src/typings/vue-agument.d.ts"]
+    "types": [
+      "markdown-it", 
+      "markdown-it-container", 
+      "axios", 
+      "miragejs", 
+      "node", 
+      "element-plus/global",
+      "unplugin-icons/types/vue"
+    ]
   }
 }

@@ -18,6 +18,7 @@ export async function resolve<T>(
             return response.data as ApiResponse<T>
         }
         catch(reason: any) {
+            console.log(reason)
             if (reason.response) {
                 throw reason.response.data as ApiResponse<T>
             }

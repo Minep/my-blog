@@ -3,6 +3,11 @@ import { fileURLToPath, URL } from 'url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import Icons from 'unplugin-icons/vite'
+import IconsResolver from 'unplugin-icons/resolver'
 
 import Inspect from 'vite-plugin-inspect'
 
@@ -10,13 +15,35 @@ require("dotenv").config()
 
 type AppConfigMapping = Record<string, string>
 
-const configMapping: AppConfigMapping = {
-  apiServer: "FRONT_PUBLIC_API_SERVER",
-  adminEntry: "BACKSTAGE_ENTRY"
-}
-
 export default defineConfig({
-  plugins: [vue(), vueJsx(), Inspect(), appConfig(configMapping)],
+  plugins: [
+    vue(), 
+    vueJsx(), 
+    Inspect(), 
+    AppConfiger({
+      apiServer: "FRONT_PUBLIC_API_SERVER",
+      adminEntry: "BACKSTAGE_ENTRY"
+    }),
+    AutoImport({
+      resolvers: [ 
+        ElementPlusResolver() ,
+        IconsResolver({
+          prefix: "Icon"
+        })
+      ]
+    }),
+    Components({
+      resolvers: [ 
+        ElementPlusResolver(),
+        IconsResolver({
+          enabledCollections: ['ep']
+        })
+      ]
+    }),
+    Icons({
+      autoInstall: true
+    })
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -24,7 +51,7 @@ export default defineConfig({
   }
 })
 
-function appConfig(mappings: AppConfigMapping) {
+function AppConfiger(mappings: AppConfigMapping) {
   const appConfigModule = "virtual:app-configer"
   const appConfigModuleId = "\0" + appConfigModule
 

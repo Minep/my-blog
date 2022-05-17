@@ -6,8 +6,8 @@ import type { ArticleMetadata, CategoryLevel, CategoryMetadata } from "@/helpers
 import { onActivated, onMounted, reactive, watch, watchEffect } from "vue";
 import { computed, ref } from "@vue/reactivity";
 import { useCategoryStore } from "@/stores/category";
-import AsyncContent from "../components/AsyncContent.vue";
-import DynamicArticleList from "../components/DynamicArticleList.vue";
+import AsyncContent from "@/components/AsyncContent.vue";
+import DynamicArticleList from "@/components/DynamicArticleList.vue";
 
 const props = defineProps({
     id: {

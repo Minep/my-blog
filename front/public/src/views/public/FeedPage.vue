@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ColumnWithAsideLayout from '@/layouts/ColumnWithAside.vue'
-import DynamicArticleList from '../components/DynamicArticleList.vue';
+import DynamicArticleList from '@/components/DynamicArticleList.vue';
 </script>
 
 <template>

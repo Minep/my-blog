@@ -27,15 +27,11 @@
 }
 
 @layer base {
-    html {
-        @apply bg-paper-400
-    }
-
     *::selection {
         @apply bg-black text-white !important;
     }
 
-    p, a, span {
+    p, a {
         @apply text-black;
     }
 }
@@ -43,6 +39,10 @@
 @layer utilities {
     .small-caps {
         font-variant: small-caps;
+    }
+
+    .font-cursive {
+        font-family: 'Zhi Mang Xing', cursive;
     }
 }
 

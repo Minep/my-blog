@@ -1,7 +1,3 @@
-import '@/assets/base.css';
-import '@/assets/md-style.css';
-import '@/assets/loaders.css';
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import MarkdownIt from 'markdown-it'
@@ -13,7 +9,11 @@ import router from './router'
 
 
 import { makeServer } from '@/server';
-import { createApiProxy } from '@/api';
+import { ApiProxyKey, ApiProxyKeyOperational, createApiProxy, createOperationalApiProxy } from '@/api';
+
+import '@/assets/base.css';
+import '@/assets/md-style.css';
+import '@/assets/loaders.css';
 
 if (process.env.NODE_ENV !== "production") {
     makeServer()
@@ -32,6 +32,7 @@ app.provide("md",
         .use(anchor)
         .use(customCodeFence))
 
-app.provide("api-proxy", createApiProxy())
+app.provide(ApiProxyKey, createApiProxy())
+app.provide(ApiProxyKeyOperational, createOperationalApiProxy())
 
 app.mount('#app')

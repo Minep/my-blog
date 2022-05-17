@@ -1,3 +1,5 @@
+const colors = require('tailwindcss/colors')
+
 module.exports = {
   content: [
     "./index.html",
@@ -8,6 +10,8 @@ module.exports = {
       'serif': ['"Serif Roman"', '"Noto Serif SC"']
     },
     colors: {
+      ...colors,
+      transparent: 'transparent',
       'black': '#333',
       'white': '#fff',
       'paper': {

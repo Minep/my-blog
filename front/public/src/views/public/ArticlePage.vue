@@ -6,7 +6,7 @@ import type { Article } from '@/helpers';
 import { onMounted, watchEffect } from 'vue';
 import { api } from '@/api';
 import { computed, reactive, ref } from '@vue/reactivity';
-import AsyncContent from '../components/AsyncContent.vue';
+import AsyncContent from '@/components/AsyncContent.vue';
 
 
 const props = defineProps<{
@@ -18,7 +18,7 @@ let viewState: { article?: Article } = reactive({
 })
 
 watchEffect(async () => {
-    const result = await api.gateway.get<Article>(api.v1.article(props.aid))
+    const result = await api.v1.article(props.aid).get<Article>()
     viewState.article = result.payload
 })
 
@@ -27,7 +27,7 @@ const articleDate = computed(() => {
     return new Date(viewState.article?.time ?? 0).toLocaleString()
 })
 
-const categoruUrl = computed(() => {
+const categoryUrl = computed(() => {
     return `/category?id=${viewState.article?.category.id ?? 0}`
 })
 
@@ -44,7 +44,7 @@ const categoruUrl = computed(() => {
                         </h1>
                         <div class="flex flex-row items-center justify-between mt-2">
                             <div class="space-x-4">
-                                <RouterLink :to="categoruUrl" 
+                                <RouterLink :to="categoryUrl" 
                                             class="inline text-white text-sm bg-black px-2 py-1 select-none">
                                     {{ viewState.article.category.name }}
                                 </RouterLink>

@@ -1,3 +1,4 @@
+import type { ArticlePageResult, Category, UserIdentity } from "@/api/dtos";
 import type { ApiResponse } from "@/api/response";
 import type { Article, ArticleMetadata, CategoryLevel } from "@/helpers";
 import { createServer, Response } from "miragejs";
@@ -18,9 +19,9 @@ export function makeServer() {
             this.namespace = "v1"
             this.timing = 1000
 
-            this.get("/article/:aid", (_, request) => {
+            this.get("/articles/:aid", (_, request) => {
                 return createResponse<Article>(200, "ok", {
-                    id: "123",
+                    id: request.params.aid,
                     title: "On Computable Numbers, with an Application to the Entscheidungsproblem",
                     desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque neque animi, quia pariatur nostrum ea ex quo asperiores soluta, quas hic voluptatem repellendus dolorem magni, illo eligendi impedit maiores atque.",
                     pinned: true,
@@ -30,6 +31,13 @@ export function makeServer() {
                     },
                     time: 1234567890,
                     content: articleMarkdown
+                })
+            })
+
+            this.post("login", (_, req) => {
+                return createResponse<UserIdentity>(200, 'ok', {
+                    name: "lunaixsky",
+                    id: "0"
                 })
             })
 
@@ -49,6 +57,40 @@ export function makeServer() {
                     })
                 }
                 return createResponse<ArticleMetadata[]>(200, "ok", result)
+            })
+
+            this.get("/admin/category/:cid", (_, req) => {
+                return createResponse<Category>(200, "ok", {
+                    id: req.params.cid,
+                    name: "主目录",
+                    children: [
+                        {
+                            id: "1",
+                            name: "分类一"
+                        },{
+                            id: "2",
+                            name: "分类二"
+                        },{
+                            id: "3",
+                            name: "分类三"
+                        }
+                    ]
+                })
+            })
+            
+            this.delete("/admin/category/:cid", (_, req) => {
+                return createResponse(200, "ok")
+            })
+
+            this.post("/admin/category/:cid", (_, req) => {
+                return createResponse(200, "ok")
+            })
+
+            this.get("/admin/articles", (_, req) => {
+                return createResponse<ArticlePageResult>(200, "ok", {
+                    count: 1000,
+                    data: []
+                })
             })
 
             this.get("/category/:cid", (_, request) => {
