@@ -2,26 +2,31 @@
 import {
     Close,
     Check,
-    DocumentAdd,
     Delete,
     Edit
 } from "@element-plus/icons-vue"
 
 import { ApiProxyKeyOperational, type ApiProxy, api } from '@/api';
 import type { ArticlePageResult, ArticleSummary } from '@/api/dtos';
-import { type PaginationResolver, usePagination } from '@/composables/usePagination';
+import usePagination from '@/composables/usePagination';
 import { inject, onMounted, watch } from 'vue';
 import { computed } from "@vue/reactivity";
+import type { ItemLoadingResolver } from "@/helpers";
+import AddDocument from "@/components/icons/AddDocument.vue";
 
 const props = defineProps<{
     queryFilter: Record<string, any>
+}>()
+
+const emits = defineEmits<{
+    (e: "new-article"): void
 }>()
 
 const proxy = inject(ApiProxyKeyOperational) as ApiProxy
 
 const filters = computed(() => props.queryFilter)
 
-const resolver: PaginationResolver<ArticlePageResult> = async (offset, limit) => {
+const resolver: ItemLoadingResolver<ArticlePageResult> = async (offset, limit) => {
     return await proxy(api.v1.admin.article().get<ArticlePageResult>({
         offset: offset,
         limit: limit,
@@ -84,7 +89,8 @@ watch(filters, () => {
     </div>
     <div class="flex justify-between">
         <div class="flex">
-            <ElButton class="child:!text-white" type="success" :icon="DocumentAdd">新文章</ElButton>
+            <ElButton size="large" class="child:!text-white" type="success" :icon="AddDocument"
+                @click="emits('new-article')">新文章</ElButton>
         </div>
         <ElPagination
             v-model:currentPage="currentPage"

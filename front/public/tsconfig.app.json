@@ -15,7 +15,8 @@
       "miragejs", 
       "node", 
       "element-plus/global",
-      "unplugin-icons/types/vue"
+      "unplugin-icons/types/vue",
+      "dayjs"
     ]
   }
 }

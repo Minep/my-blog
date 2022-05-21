@@ -7,12 +7,6 @@ import {
     Picture
 } from '@element-plus/icons-vue'
 
-const router = useRouter()
-
-function navigateTo(url: string) {
-    router.push(url)
-}
-
 </script>
 
 <template>
@@ -36,7 +30,7 @@ function navigateTo(url: string) {
             </ElMenuItem>
         </ElMenu>
     </ElAside>
-    <ElMain class="max-h-screen">
+    <ElMain class="max-h-screen !p-0" ref="showcase">
         <RouterView></RouterView>
     </ElMain>
 </ElContainer>

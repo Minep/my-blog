@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import usePageTitle from "@/composables/usePageTitle";
 import { useIdentity } from "@/stores/identity";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -13,6 +14,8 @@ const onAction = ref(false)
 
 const identity = useIdentity()
 const router = useRouter()
+
+usePageTitle("登录")
 
 function onLogin() {
     onAction.value = true

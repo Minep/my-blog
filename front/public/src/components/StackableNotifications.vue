@@ -14,7 +14,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <ul class="p-6 space-y-5 z-50">
+    <ul class="p-6 space-y-5 z-[3000]">
         <TransitionGroup>
             <NotificationItem v-for="(v,i) in notification.all" :key="i" :data="v"/>
         </TransitionGroup>

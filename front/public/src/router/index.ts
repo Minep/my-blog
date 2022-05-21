@@ -1,52 +1,20 @@
+import { useIdentity } from '@/stores/identity'
 import { createRouter, createWebHistory } from 'vue-router'
+import routes from './routes'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'main-page',
-      component: () => import("@/views/public/MainPage.vue"),
-      children: [
-        {
-          path: '',
-          component: () => import("@/views/public/FeedPage.vue")
-        },
-        {
-          path: 'article/:aid',
-          component: () => import("@/views/public/ArticlePage.vue"),
-          props: true
-        },
-        {
-          path: 'category',
-          component: () => import("@/views/public/CategoryPage.vue"),
-          props: route => ({ id: route.query.id ?? "0"})
-        }
-      ]
-    },
-    {
-      path: '/login',
-      component: () => import("@/views/public/LoginPage.vue")
-    },
-    {
-      path: '/admin',
-      component: () => import("@/views/admin/MainPage.vue"),
-      children: [
-        {
-          path: "site-stats",
-          component: () => import("@/views/admin/SiteStatsPage.vue"),
-        },
-        {
-          path: "my-articles",
-          component: () => import("@/views/admin/MyArticlesPage.vue")
-        },
-        {
-          path: "my-imgbed",
-          component: () => import("@/views/admin/MyImageBedPage.vue")
-        }
-      ]
-    }
-  ]
+  routes: routes
 })
-
 export default router
+
+
+router.beforeEach((to, from) => {
+  const identity = useIdentity()
+  if (to.path.startsWith("/admin") && !identity.hasIdentity) {
+    return {
+      name: "Login"
+    }
+  }
+  return true
+})

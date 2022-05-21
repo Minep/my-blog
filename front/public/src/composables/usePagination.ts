@@ -1,9 +1,8 @@
+import type { ItemLoadingResolver } from "@/helpers";
 import { computed } from "@vue/reactivity";
 import { ref, type Ref } from "vue";
 
-export type PaginationResolver<T> = (offset: number, limit: number) => Promise<T | undefined>
-
-export function usePagination<T, U>(dataKey: keyof T, totalKey: keyof T, resolver: PaginationResolver<T>) {
+export default function usePagination<T, U>(dataKey: keyof T, totalKey: keyof T, resolver: ItemLoadingResolver<T>) {
     const data: Ref<U[]> = ref([])
     const loading = ref(false)
     const totalCount = ref(0)

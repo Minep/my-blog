@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import CategoryControlPanel from "@/components/admin/CategoryControlPanel.vue";
-import { inject, onMounted, reactive, ref, watchEffect } from "vue";
-
-import type { ArticlePageResult, ArticleSummary } from "@/api/dtos";
-
-import { usePagination, type PaginationResolver } from "@/composables/usePagination";
-import { api, ApiProxyKeyOperational, type ApiProxy } from "@/api";
-import ArticleControlPanel from "../../components/admin/ArticleControlPanel.vue";
+import ArticleControlPanel from "@/components/admin/ArticleControlPanel.vue";
+import { ref } from "vue";
+import UploadArticlePopup from "@/components/admin/UploadArticlePopup.vue";
+import usePageTitle from "@/composables/usePageTitle";
 
 const filters = ref({})
+
+const showUploader = ref(false)
+
+usePageTitle("管理文章")
 
 function onSelection(selectedCids: string[]) {
     filters.value = {
@@ -25,7 +26,11 @@ function onSelection(selectedCids: string[]) {
                 @selection="onSelection"/>
         </ElAside>
         <ElMain class="!p-10 h-full">
-            <ArticleControlPanel class="shadow-md w-full h-full bg-white p-5" :query-filter="filters"/>
+            <ArticleControlPanel 
+                class="shadow-md w-full h-full bg-white p-5" 
+                :query-filter="filters"
+                @new-article="showUploader = true"/>
         </ElMain>
+        <UploadArticlePopup v-model="showUploader"/>
     </ElContainer>
 </template>

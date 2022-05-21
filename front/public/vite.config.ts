@@ -22,7 +22,7 @@ export default defineConfig({
     Inspect(), 
     AppConfiger({
       apiServer: "FRONT_PUBLIC_API_SERVER",
-      adminEntry: "BACKSTAGE_ENTRY"
+      siteName: "FRONT_SITE_NAME"
     }),
     AutoImport({
       resolvers: [ 
@@ -59,7 +59,7 @@ function AppConfiger(mappings: AppConfigMapping) {
     export const appConfig = {
       ${
         Object.keys(mappings)
-              .map((v) => `'${v}': '${process.env[mappings[v]] ?? ""}'`)
+              .map((v) => `'${v}': "${process.env[mappings[v]] ?? ''}"`)
               .join(',')
       }
     }

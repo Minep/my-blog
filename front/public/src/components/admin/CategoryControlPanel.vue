@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { api, ApiProxyKey, ApiProxyKeyOperational, type ApiProxy } from "@/api";
+import { api, ApiProxyKeyOperational, type ApiProxy } from "@/api";
 import useCategoryLoader from "@/composables/useCategoryLoader";
 import { useNotification } from "@/stores/notifications";
 import {
@@ -10,6 +10,9 @@ import type Node from "element-plus/es/components/tree/src/model/node";
 import type { TreeOptionProps } from "element-plus/es/components/tree/src/tree.type";
 import type { TreeNodeData } from "element-plus/lib/components/tree/src/tree.type";
 import { inject, reactive } from "vue";
+import AddChild from "@/components/icons/AddChild.vue";
+import { ElMessageBox } from "element-plus";
+import "element-plus/es/components/message-box/style/css"
 
 const emit = defineEmits<{
     (e: "selection", value: string[]): void
@@ -18,7 +21,7 @@ const emit = defineEmits<{
 const treeConfiguration: TreeOptionProps = {
     label: "name",
     children: "children",
-    isLeaf: (data: TreeNodeData, node: Node) => data.children && data.children.length == 0
+    isLeaf: (data: TreeNodeData, node: Node) => data.children && data.children.length === 0
 }
 
 const notification = useNotification()
@@ -26,10 +29,12 @@ const notification = useNotification()
 const dialogState = reactive({
     onAdd: {
         shown: false,
-        underName: "",
-        underCid: "",
+        selectedName: "",
+        selectedCid: "",
         nameToAdd: "",
-        loading: false
+        addAsSibling: false,
+        loading: false,
+        parentCid: ""
     },
     onDelete: {
         shown: false,
@@ -42,15 +47,16 @@ const dialogState = reactive({
 const proxy = inject(ApiProxyKeyOperational) as ApiProxy
 
 const {
-    isLoaded,
     resolver: loadCategory
 } = useCategoryLoader(proxy)
 
-function requestAdd(underNode: Node) {
+function requestAdd(underNode: Node, addAsSibling = false) {
     dialogState.onAdd.shown = true
-    dialogState.onAdd.underName = underNode.data.name
-    dialogState.onAdd.underCid = underNode.data.id
+    dialogState.onAdd.selectedName = underNode.data.name
+    dialogState.onAdd.selectedCid = underNode.data.id
     dialogState.onAdd.nameToAdd = ""
+    dialogState.onAdd.addAsSibling = addAsSibling
+    dialogState.onAdd.parentCid = underNode.parent.data.id ?? "0"
 }
 
 function requestDelete(ofNode: Node) {
@@ -78,7 +84,9 @@ function confirmAdd() {
         return
     }
     dialogState.onAdd.loading = true
-    proxy(api.v1.admin.category(dialogState.onAdd.underCid).post({
+
+    const target = dialogState.onAdd.addAsSibling ? dialogState.onAdd.parentCid : dialogState.onAdd.selectedCid
+    proxy(api.v1.admin.category(target).post({
         name: dialogState.onAdd.nameToAdd
     })).finally(() => {
         dialogState.onAdd.shown = false
@@ -95,13 +103,23 @@ function onCheck(node: Node, checkStatus: { checkedNodes: TreeNodeData[] }) {
     <div class="flex flex-col">
         <p class="mb-4">文章类别</p>
         <div class="grow overflow-y-auto">
-            <ElTree show-checkbox lazy :load="loadCategory" @check="onCheck" :props="treeConfiguration" v-loading="!isLoaded">
+            <ElTree show-checkbox lazy :load="loadCategory" @check="onCheck" :props="treeConfiguration">
                 <template #default="{ node, data }">
                     <div class="flex justify-between w-full">
                         <span>{{ node.label }}</span>
                         <span class="space-x-1">
-                            <a @click="requestAdd(node)"> <ElIcon><Plus/></ElIcon> </a>
-                            <a @click="requestDelete(node)"> <ElIcon color="#F56C6C"><Delete/></ElIcon> </a>
+                            <!-- <ElTooltip placement="bottom" content="添加父级分类">
+                                <a @click.stop="requestAdd(node)"> <ElIcon><AddParent/></ElIcon> </a>
+                            </ElTooltip> -->
+                            <ElTooltip v-if="node.parent.id" placement="left" content="添加同级分类">
+                                <a @click.stop="requestAdd(node, true)"> <ElIcon><Plus/></ElIcon> </a>
+                            </ElTooltip>
+                            <ElTooltip placement="bottom" content="添加子级分类">
+                                <a @click.stop="requestAdd(node)"> <ElIcon><AddChild/></ElIcon> </a>
+                            </ElTooltip>
+                            <ElTooltip v-if="node.parent.id" placement="right" content="删除此分类">
+                                <a @click.stop="requestDelete(node)"> <ElIcon color="#F56C6C"><Delete/></ElIcon> </a>
+                            </ElTooltip>
                         </span>
                     </div>
                 </template>
@@ -112,9 +130,9 @@ function onCheck(node: Node, checkStatus: { checkedNodes: TreeNodeData[] }) {
             </template>
             <div class="space-y-3">
                 <p>
-                    在类别 {{ dialogState.onAdd.underName }}
-                    <span class="text-slate-500 rounded-md bg-slate-200 px-1">#{{ dialogState.onAdd.underCid }}</span>
-                    添加一个新分类。请输入名称
+                    添加一个新分类，使其是 {{ dialogState.onAdd.selectedName }}
+                    <span class="text-slate-500 rounded-md bg-slate-200 px-1">#{{ dialogState.onAdd.selectedCid }}</span>
+                    的<b>{{ !dialogState.onAdd.addAsSibling ? "子级分类" : "同级分类" }}</b>。请输入新分类的名称
                 </p>
                 <ElInput class="px-3" placeholder="分类名称" v-model="dialogState.onAdd.nameToAdd"></ElInput>
             </div>

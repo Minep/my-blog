@@ -1,6 +1,7 @@
 import type { ArticlePageResult, Category, UserIdentity } from "@/api/dtos";
 import type { ApiResponse } from "@/api/response";
 import type { Article, ArticleMetadata, CategoryLevel } from "@/helpers";
+import { uniqueId } from "lodash";
 import { createServer, Response } from "miragejs";
 import { appConfig } from "virtual:app-configer";
 import { articleMarkdown } from "./mock-data";
@@ -41,6 +42,18 @@ export function makeServer() {
                 })
             })
 
+            this.put("/admin/articles", (_, req) => {
+                return createResponse(200, 'ok')
+            })
+
+            this.get("/admin/stats", (_, req) => {
+                return createResponse(200, 'ok', {
+                    articles: Math.floor(Math.random() * 400),
+                    categories: Math.floor(Math.random() * 400),
+                    pictures: Math.floor(Math.random() * 400)
+                })
+            })
+
             this.get("/articles", (_, req) => {
                 const result = []
                 for (let index = 0; index < 5; index++) {
@@ -65,13 +78,13 @@ export function makeServer() {
                     name: "主目录",
                     children: [
                         {
-                            id: "1",
+                            id: uniqueId(),
                             name: "分类一"
                         },{
-                            id: "2",
+                            id: uniqueId(),
                             name: "分类二"
                         },{
-                            id: "3",
+                            id: uniqueId(),
                             name: "分类三"
                         }
                     ]

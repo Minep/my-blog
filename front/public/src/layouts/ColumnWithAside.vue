@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import useScroll from '@/composables/useScroll';
+import { useScroll } from '@vueuse/core';
 import { onMounted, ref, watchEffect } from 'vue';
 
 
-const { scrollX, scrollY } = useScroll()
+const { y } = useScroll(document)
 const setAffix = ref(false)
 const affixContainer = ref<HTMLDivElement | null>(null)
 const containerOffset = { offsetY: 0 }
@@ -13,7 +13,7 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-    setAffix.value = scrollY.value > containerOffset.offsetY
+    setAffix.value = y.value > containerOffset.offsetY
 })
 
 </script>

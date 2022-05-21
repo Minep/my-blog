@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps({
-    readyIf: {
+    ready: {
         type: Boolean,
         default: false
     },
@@ -14,9 +14,9 @@ const props = defineProps({
 
 <template>
 <div>
-    <slot v-if="readyIf || incremental"/>
-    <div v-if="!readyIf" class="flex justify-center items-center mt-10">
-        <div class="block-bricks"></div>
+    <slot v-if="ready || incremental"/>
+    <div class="flex justify-center items-center mt-10">
+        <div v-if="!ready"  class="block-bricks"></div>
     </div>
 </div>
 </template>

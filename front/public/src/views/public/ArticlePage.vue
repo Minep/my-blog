@@ -7,6 +7,7 @@ import { onMounted, watchEffect } from 'vue';
 import { api } from '@/api';
 import { computed, reactive, ref } from '@vue/reactivity';
 import AsyncContent from '@/components/AsyncContent.vue';
+import usePageTitle from '@/composables/usePageTitle';
 
 
 const props = defineProps<{
@@ -20,6 +21,7 @@ let viewState: { article?: Article } = reactive({
 watchEffect(async () => {
     const result = await api.v1.article(props.aid).get<Article>()
     viewState.article = result.payload
+    usePageTitle(viewState.article?.title ?? '文章')
 })
 
 
@@ -36,7 +38,7 @@ const categoryUrl = computed(() => {
 <template>
     <ColumnWithAsideLayout>
         <template v-slot:column>
-            <AsyncContent :ready-if="!!viewState.article">
+            <AsyncContent :ready="!!viewState.article">
                 <div v-if="viewState.article" class="px-[5rem] font-serif max-w-5xl space-y-10">
                     <section>
                         <h1 class="text-4xl small-caps font-bold mb-5">

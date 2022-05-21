@@ -1,76 +1,164 @@
-<script setup lang="ts">import { ref } from 'vue';
+<script setup lang="ts">
 
+import { onMounted, reactive, ref, watchEffect } from 'vue';
 import {
     Upload,
-    Search
+    Search,
+    Plus
 } from "@element-plus/icons-vue"
-import { computed } from '@vue/reactivity';
-import { mulberry32 } from '@/helpers';
-import AsyncContent from '../../components/AsyncContent.vue';
+import type { ItemLoadingResolver } from '@/helpers';
+import AsyncContent from '@/components/AsyncContent.vue';
+import useIncrementalLoad from '@/composables/useIncrementalLoad';
+import { useNotification } from '@/stores/notifications';
+import { ElLoading } from 'element-plus';
+import "element-plus/es/components/loading/style/css"
+import usePageTitle from '@/composables/usePageTitle';
 
 const keyword = ref("")
 
-const rng = mulberry32((new Date()).getMilliseconds())
-
-const randRatio = () => {
-    const r = rng()
-    console.log(r)
-    return r > 0.5 ? "aspect-square" : "aspect-video"
+function getName(url: string) {
+    const val = url.split('/').pop() ?? ''
+    return val.split('?', 1)[0]
 }
 
-const image = [
-    "https://images.unsplash.com/photo-1498603993951-8a027a8a8f84?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2936&q=80",
-    "https://images.unsplash.com/photo-1614102073832-030967418971?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1169&q=80",
-    "https://images.unsplash.com/photo-1552083375-1447ce886485?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    "https://images.unsplash.com/photo-1609154767012-331529e7d73b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=671&q=80",
-    "https://images.unsplash.com/photo-1605007493699-af65834f8a00?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80",
-    "https://images.unsplash.com/photo-1610818544205-9830e171384c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-    "https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    "https://images.unsplash.com/photo-1612712191426-54db4d88cbec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1173&q=80",
-    "https://images.unsplash.com/photo-1629362505696-23630c44bec1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-    "https://images.unsplash.com/photo-1498603993951-8a027a8a8f84?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2936&q=80",
-    "https://images.unsplash.com/photo-1614102073832-030967418971?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1169&q=80",
-    "https://images.unsplash.com/photo-1552083375-1447ce886485?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    "https://images.unsplash.com/photo-1609154767012-331529e7d73b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=671&q=80",
-    "https://images.unsplash.com/photo-1605007493699-af65834f8a00?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80",
-    "https://images.unsplash.com/photo-1610818544205-9830e171384c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-    "https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    "https://images.unsplash.com/photo-1612712191426-54db4d88cbec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1173&q=80",
-    "https://images.unsplash.com/photo-1629362505696-23630c44bec1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+const elPictureShowcase = ref<HTMLElement>()
 
-]
+const resolver: ItemLoadingResolver<string[]> = async (offset, limit) => {
+    // TODO: Integrate with OSS
+    await (new Promise((resolve) => setTimeout(() => resolve(null), 2000)))
+    return []
+}
 
+const notification = useNotification()
+
+const {
+    data,
+    loading,
+    hasMore,
+    reset
+} = useIncrementalLoad(elPictureShowcase, resolver)
+
+usePageTitle("管理图床")
+
+const uploadContext: {
+    shown: boolean;
+    fileList: File[];
+    currentProgress: string;
+} = reactive({
+    shown: false,
+    fileList: [],
+    currentProgress: ""
+})
+
+onMounted(() => reset())
+
+watchEffect(() => {
+    for (let index = 0; index < uploadContext.fileList.length; index++) {
+        const element = uploadContext.fileList[index];
+        console.log(element)
+    }
+})
+
+function applyKeyword() {
+    reset()
+}
+
+const confirmResetUpload = () => {
+    Object.assign(uploadContext, {
+        shown: false,
+        fileList: [],
+        currentProgress: ""
+    })
+}
+
+const confirmUpload = () => {
+
+    const loading = ElLoading.service({
+        target: document.body,
+        lock: true,
+        background: "rgba(255,255,255,0.8)",
+        fullscreen: true
+    })
+
+    const unwatchProgress = watchEffect(() => {
+        loading.setText(uploadContext.currentProgress)
+    })
+
+    new Promise<void>((resolve, reject) => {
+        // TODO: Integrate with OSS
+        setTimeout(() => {
+            uploadContext.currentProgress = "Hello"
+            setTimeout(() => reject("just error!"), 1000)
+        }, 2000)
+    })
+        .then(() => {
+            notification.push({
+                level: "success",
+                message: "全部上传成功"
+            })
+            loading.close()
+            confirmResetUpload()
+        })
+        .catch((err) => {
+            notification.push({
+                level: "error",
+                message: `上传失败（${err}）`
+            })
+            loading.close()
+        })
+        .finally(() => {
+            unwatchProgress()
+        })
+}
 
 </script>
 
 <template>
-<div>
-    <section class="w-full p-16 flex flex-row justify-center items-center space-x-[10rem]">
-        <p class="font-cursive text-[5rem]">我的图床</p>
+<div class="h-full overflow-y-auto p-5" ref="elPictureShowcase">
+    <section class="w-full p-5 flex flex-row justify-center items-center">
         <div class="flex space-x-8 items-center p-8 bg-white shadow-md">
-            <!-- <input class="
-                bg-transparent border-b-black border-b-2 text-lg px-4 pt-2 pb-1 focus:outline-none
-            "> -->
-            <ElInput v-model="keyword" size="large"/>
-            <ElButton type="primary" size="large" :icon="Search" round>搜索</ElButton>
-            <ElButton type="success" size="large" :icon="Upload" round>上传</ElButton>
+            <ElInput v-model="keyword" size="large" clearable @clear="applyKeyword()"/>
+            <ElButton @click="applyKeyword()" type="primary" size="large" :icon="Search" round>搜索</ElButton>
+            <ElButton type="success" size="large" :icon="Upload" round @click="uploadContext.shown = true">上传</ElButton>
         </div>
     </section>
-    <AsyncContent class="mb-10" ready-if incremental>
+    <AsyncContent class="pb-10" :ready="!loading" incremental>
         <section class="w-full columns-4 pt-5 my-8">
-            <div v-for="url in image" class="mt-5 py-4 px-1" :class="randRatio()">
+            <div v-for="url in data" class="mt-5 py-4 px-1">
                 <div class="h-fit w-full rounded-md relative hover:scale-[1.05] transition-transform transform-gpu">
                     <p class="absolute top-0 left-0 text-white bg-black bg-opacity-50 py-1 px-2 rounded-md
                             text-xs max-w-[70%] truncate hover:break-normal hover:bg-opacity-80
                             hover:whitespace-normal">
-                        ABCDABCDAB CDABCDABCDABCDABCDABCDA BCDABCDABCDABCDABCDA BCDABCDABCD
+                        {{ getName(url) }}
                     </p>
                     <img class="w-full object-cover rounded-md shadow-md" :src="url">
                 </div>
             </div>
         </section>
+        <ElDivider v-if="!hasMore" class="!w-[70%] !mx-auto">
+            暂无更多内容
+        </ElDivider>
     </AsyncContent>
+    <ElDialog title="上传图片" v-model="uploadContext.shown">
+        <ElUpload
+            action=""
+            :auto-upload="false"
+            :file-list="uploadContext.fileList"
+            list-type="picture-card">
+            <ElIcon><Plus/></ElIcon>
+        </ElUpload>
+        <template #footer>
+            <div class="template-footer">
+                <ElButton type="danger" class="child:text-white float-left" 
+                        @click="confirmResetUpload()">重置</ElButton>
+                <ElButton type="primary" class="child:text-white" 
+                        @click="uploadContext.shown = false">稍后再说</ElButton>
+                <ElButton type="success" class="child:text-white" 
+                        @click="confirmUpload()">
+                    立即上传
+                </ElButton>
+            </div>
+        </template>
+    </ElDialog>
 </div>
 </template>

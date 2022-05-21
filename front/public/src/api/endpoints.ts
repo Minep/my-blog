@@ -8,6 +8,7 @@ export const endpointsV1 = {
     category: (cid?: string) => publicEndpoint(`/v1/category/${cid ?? ''}`),
     admin: {
         login: () => adminEndpoint(`/v1/login`),
+        stats: () => adminEndpoint(`/v1/admin/stats`),
         category: (cid?: string) => adminEndpoint(`/v1/admin/category/${cid ?? ''}`),
         article: (aid?: string) => adminEndpoint(`/v1/admin/articles/${aid ?? ''}`)
     }

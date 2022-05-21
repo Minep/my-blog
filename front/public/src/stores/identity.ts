@@ -12,7 +12,8 @@ export const useIdentity = defineStore({
     getters: {
         identity: (state) => ({
             ...state
-        })
+        }),
+        hasIdentity: (state) => state.id && state.name
     },
     actions: {
         async login(uname: string, password: string) {

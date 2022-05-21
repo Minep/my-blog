@@ -8,6 +8,7 @@ import { computed, ref } from "@vue/reactivity";
 import { useCategoryStore } from "@/stores/category";
 import AsyncContent from "@/components/AsyncContent.vue";
 import DynamicArticleList from "@/components/DynamicArticleList.vue";
+import usePageTitle from "@/composables/usePageTitle";
 
 const props = defineProps({
     id: {
@@ -24,6 +25,8 @@ const viewState: {
 })
 
 const categoryStore = useCategoryStore()
+
+usePageTitle("分类")
 
 const childrenCategories = computed(() => {
     const levelInfo = viewState.currentLevel;
@@ -61,7 +64,7 @@ watchEffect(async () => {
 <template>
     <ColumnWithAside>
         <template v-slot:aside>
-            <AsyncContent :ready-if="!!viewState.currentLevel">
+            <AsyncContent :ready="!!viewState.currentLevel">
                 <p class="text-3xl font-serif font-bold mb-8 small-caps">
                     {{ viewState.currentLevel?.current.name }}
                 </p>
