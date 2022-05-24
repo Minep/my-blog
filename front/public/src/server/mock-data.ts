@@ -33,12 +33,50 @@ Pellentesque metus enim, euismod in egestas suscipit, facilisis quis lectus. Int
 
 \`\`\` bit-field
 [
-    { "name": "IPO",   "bits": 8, "attr": "RO" },
-    {                  "bits": 7 },
-    { "name": "BRK",   "bits": 5, "attr": "RW", "type": 4 },
-    { "name": "CPK",   "bits": 1 },
-    { "name": "Clear", "bits": 3 },
-    { "bits": 8 }
+    {
+        "name": "P/R",
+        "bits": 1
+    },
+    {
+        "name": "SCRL",
+        "bits": 1
+    },
+    {
+        "name": "NUML",
+        "bits": 1
+    },
+    {
+        "name": "CAPL",
+        "bits": 1
+    },
+    {
+        "name": "LSHFT",
+        "bits": 1
+    },
+    {
+        "name": "RSHFT",
+        "bits": 1
+    },
+    {
+        "name": "LCTRL",
+        "bits": 1
+    },
+    {
+        "name": "RCTRL",
+        "bits": 1
+    },
+    {
+        "name": "LALT",
+        "bits": 1
+    },
+    {
+        "name": "RALT",
+        "bits": 1
+    },
+    {
+        "bits": 6,
+        "attr": "Reserved"
+    }
 ]
 \`\`\`
 

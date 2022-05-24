@@ -16,6 +16,12 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@redis/*": ["src/redis/*"],
+      "@dto/*": ["src/dtos/*"],
+      "@3rd/*": ["src/third-party/*"],
+      "@/*": ["src/*"],
+    }
   }
 }

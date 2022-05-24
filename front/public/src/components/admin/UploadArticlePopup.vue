@@ -53,6 +53,10 @@ const ctxUpload: UploadContext = reactive<UploadContext>({
     }
 })
 
+watchEffect(() => {
+    console.log(ctxUpload.metadata.title)
+})
+
 const notification = useNotification()
 
 const proxy = inject(ApiProxyKeyOperational) as ApiProxy

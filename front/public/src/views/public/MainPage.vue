@@ -10,8 +10,8 @@ const user = useIdentity()
 <template>
   <div class="fixed left-0 top-0 w-screen h-screen bg-paper-400 -z-50">
     <TwilightCutieMark class="
-      fill-paper-400 stroke-paper-500 opacity-70 float-right w-[55rem]
-      absolute -bottom-[23rem] -left-[10rem]"/>
+      fill-paper-400 stroke-paper-500 opacity-40 float-right w-[80rem]
+      absolute -bottom-[35rem] -left-[6rem] stroke-[0.3]"/>
   </div>
   <div class="w-full h-fit">
     <header class="w-full h-max flex flex-row justify-between px-5 py-4">
