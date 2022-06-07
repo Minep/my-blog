@@ -1,6 +1,7 @@
 import { useNotification } from "@/stores/notifications";
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import { appConfig } from "virtual:app-configer";
+import { useRouter } from "vue-router";
 import { endpointsV1 } from "./endpoints";
 import { resolve } from "./resolver";
 import type { ApiResponse } from "./response";

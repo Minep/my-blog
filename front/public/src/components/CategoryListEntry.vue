@@ -14,9 +14,9 @@ const categoryUrl = computed(()=>{
 
 <template>
     <RouterLink :to="categoryUrl"
-        class="block font-serif border-b-4
-                pl-2 pb-2 pt-4 hover:bg-black hover:text-white border-black transition-all
-                text-xl font-bold small-caps align-middle">
+        class="block font-serif border-x-4
+                pl-8 pb-2 pt-4 hover:bg-black hover:text-white border-black transition-all
+                text-2xl font-bold align-middle">
         {{ data.name }}
     </RouterLink>
 </template>

@@ -1,15 +1,17 @@
-import { notFound } from "@/api";
+import { notFound, failed } from "@/api";
 import { Article, ArticleMetadata, ArticlePageResult, ArticleQueryFilter, ArticleSummary, ArticleUploadMetadata, CategoryMetadata } from "@/dtos";
-import { ArticleMetadataEntity } from "@/entities";
+import { ArticleEntity, ArticleMetadataEntity } from "@/entities";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, SelectQueryBuilder } from "typeorm";
+import { IsNull, Repository, SelectQueryBuilder } from "typeorm";
 
 @Injectable()
 export default class ArticleService {
     constructor (
         @InjectRepository(ArticleMetadataEntity)
-        private articleRepo: Repository<ArticleMetadataEntity>
+        private articleRepo: Repository<ArticleMetadataEntity>,
+        @InjectRepository(ArticleEntity)
+        private contentRepo: Repository<ArticleEntity>
     ) { }
 
     private fromQueryFilter(filter: ArticleQueryFilter) {
@@ -17,15 +19,19 @@ export default class ArticleService {
             skip: filter.offset,
             take: filter.limit ?? 20,
             where: (filter.cid ? filter.cid.map(v => ({
-                category: {
-                    id: v
-                }
-            })) : undefined)
+                categoryId: v == 0 ? IsNull() : v
+            })) : {})
         }
     }
 
     public async list(filter: ArticleQueryFilter): Promise<ArticleMetadata[]> {
         const queryPart = this.fromQueryFilter(filter);
+        const where_clause = 
+            (queryPart.where instanceof Array) 
+            ? queryPart.where.length > 0 
+                ? queryPart.where[0] 
+                    : {}
+                : {}
         const articles = await this.articleRepo.find({
             select: [
                 "title",
@@ -37,9 +43,7 @@ export default class ArticleService {
             ],
             ...queryPart,
             where: {
-                category: {
-                    id: filter.cid ? filter.cid[0] : undefined
-                },
+                ...where_clause,
                 visible: true
             },
             relations: ["category"],
@@ -91,16 +95,16 @@ export default class ArticleService {
 
     public async save(update: ArticleUploadMetadata, aid?: number) {
         try {
-            this.articleRepo.save(this.articleRepo.create({
+            await this.articleRepo.save(this.articleRepo.create({
                 id: aid,
                 title: update.title,
                 date: update.time,
                 pinned: update.pinned,
                 visible: update.visible ?? true,
                 desc: update.desc,
-                category: {
+                category: (update.category == 0 ? undefined : {
                     id: update.category
-                },
+                }),
                 content: {
                     text: update.content
                 }
@@ -108,13 +112,14 @@ export default class ArticleService {
         }
         catch (err) {
             console.error(err)
-            throw fail(`save(aid=${aid})`)
+            throw failed(`save(aid=${aid})`)
         }
     }
 
     public async get(aid: number): Promise<Article> {
-        const article = await this.articleRepo.findOne(aid, {
+        const article = await this.articleRepo.findOne({
             where: {
+                id: aid,
                 visible: true
             },
             relations: [ "content", "category" ]

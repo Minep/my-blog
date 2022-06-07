@@ -1,0 +1,30 @@
+FROM node:17-alpine as BUILD
+
+WORKDIR /core
+
+ENV PATH /core/node_modules/.bin:$PATH
+
+COPY ./package.json ./
+COPY ./package-lock.json ./
+
+RUN npm ci
+
+COPY . ./
+
+RUN npm run build \
+    && npm prune --production
+
+FROM node:17-alpine as PROD
+
+WORKDIR /core
+
+ENV APP_RUN_MODE prod
+
+COPY --from=BUILD /core/package*.json /core/
+COPY --from=BUILD /core/node_modules/ /core/node_modules/
+COPY --from=BUILD /core/dist /core/dist
+COPY --from=BUILD /core/entry.sh /core/entry.sh
+
+RUN [ "chmod", "+x", "entry.sh" ]
+
+ENTRYPOINT [ "/backend/entry.sh" ]

@@ -9,6 +9,25 @@ export const useNotification = defineStore("notification", {
         all: (state) => state.queue
     },
     actions: {
+        inform(text: string, elapse = 3) {
+            this.popup(text, "info", elapse)
+        },
+        success(text: string, elapse = 3) {
+            this.popup(text, "success", elapse)
+        },
+        warn(text: string, elapse = 3) {
+            this.popup(text, "warn", elapse)
+        },
+        error(text: string, elapse = 3) {
+            this.popup(text, "error", elapse)
+        },
+        popup(text: string, level: "success" | "warn" | "info" | "error", elapse: number) {
+            this.push({
+                message: text,
+                elapse: elapse,
+                level: level
+            })
+        },
         push(notification: UINotification) {
             if (!notification.elapse) {
                 notification.elapse = 5

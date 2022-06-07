@@ -86,7 +86,7 @@ function confirmAdd() {
     dialogState.onAdd.loading = true
 
     const target = dialogState.onAdd.addAsSibling ? dialogState.onAdd.parentCid : dialogState.onAdd.selectedCid
-    proxy(api.v1.admin.category(target).post({
+    proxy(api.v1.admin.category(target).put({
         name: dialogState.onAdd.nameToAdd
     })).finally(() => {
         dialogState.onAdd.shown = false
@@ -103,7 +103,7 @@ function onCheck(node: Node, checkStatus: { checkedNodes: TreeNodeData[] }) {
     <div class="flex flex-col">
         <p class="mb-4">文章类别</p>
         <div class="grow overflow-y-auto">
-            <ElTree show-checkbox lazy :load="loadCategory" @check="onCheck" :props="treeConfiguration">
+            <ElTree show-checkbox lazy :load="loadCategory" @check="onCheck" :props="treeConfiguration" check-strictly>
                 <template #default="{ node, data }">
                     <div class="flex justify-between w-full">
                         <span>{{ node.label }}</span>

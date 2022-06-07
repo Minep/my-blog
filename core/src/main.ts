@@ -4,9 +4,10 @@ import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
+import { RefererCheckInterceptor } from './common/interceptors/referer-check.interceptor';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
-async function bootstrap() {
+(async function () {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService)
 
@@ -15,7 +16,9 @@ async function bootstrap() {
     transform: true
   }))
 
-  app.useGlobalInterceptors(new ResponseInterceptor())
+  app
+    .useGlobalInterceptors(new ResponseInterceptor())
+    .useGlobalInterceptors(new RefererCheckInterceptor(config))
 
   app.use(helmet())
 
@@ -36,5 +39,4 @@ async function bootstrap() {
     });
 
   await app.listen(3000);
-}
-bootstrap();
+})();

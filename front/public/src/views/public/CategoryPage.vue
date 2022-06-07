@@ -9,6 +9,7 @@ import { useCategoryStore } from "@/stores/category";
 import AsyncContent from "@/components/AsyncContent.vue";
 import DynamicArticleList from "@/components/DynamicArticleList.vue";
 import usePageTitle from "@/composables/usePageTitle";
+import { useRouter } from "vue-router";
 
 const props = defineProps({
     id: {
@@ -46,16 +47,23 @@ const childrenCategories = computed(() => {
 })
 
 let articleParams = ref({
-    cat: "0"
+    cid: "0"
 })
+
+const router = useRouter()
 
 watchEffect(async () => {
     viewState.currentLevel = undefined
-    viewState.currentLevel = await categoryStore.navigateTo(props.id)
-    if (viewState.currentLevel) {
-        articleParams.value = {
-            cat: viewState.currentLevel.current.id
+    try {
+        viewState.currentLevel = await categoryStore.navigateTo(props.id)
+        if (viewState.currentLevel) {
+            articleParams.value = {
+                cid: viewState.currentLevel.current.id
+            }
         }
+    }
+    catch {
+        router.replace("/category-not-found")
     }
 })
 
@@ -65,7 +73,7 @@ watchEffect(async () => {
     <ColumnWithAside>
         <template v-slot:aside>
             <AsyncContent :ready="!!viewState.currentLevel">
-                <p class="text-3xl font-serif font-bold mb-8 small-caps">
+                <p class="text-4xl font-serif font-bold mb-8 small-caps">
                     {{ viewState.currentLevel?.current.name }}
                 </p>
                 <CategoryList :items="childrenCategories"/>

@@ -6,12 +6,10 @@ import { inject, ref } from "vue";
 export default function useCategoryLoader(proxy: ApiProxy) {
     const resolver = (node: Node, resolve: (data: Category[]) => void) => {
         if (node.level === 0) {
-            resolve([
-                {
-                    id: '0',
-                    name: '主目录'
-                }
-            ])
+            proxy(api.v1.admin.category('0').get<Category>())
+                .then((v) => {
+                    resolve(v ? [v] : [])
+                })
         }
         else {
             proxy(api.v1.admin.category(node.data.id).get<Category>())

@@ -1,8 +1,9 @@
 import { ArticleMetadata } from "@/dtos";
-import { ArticleEntity, ArticleMetadataEntity, CategoryEntity } from "@/entities";
+import { ArticleEntity, ArticleMetadataEntity, CategoryEntity, UserEntity } from "@/entities";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, TreeRepository } from "typeorm";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export default class SeedingService {
@@ -12,12 +13,15 @@ export default class SeedingService {
         @InjectRepository(ArticleMetadataEntity)
         private articleRepo: Repository<ArticleMetadataEntity>,
         @InjectRepository(ArticleEntity)
-        private articleContentRepo: Repository<ArticleEntity>
+        private articleContentRepo: Repository<ArticleEntity>,
+        @InjectRepository(UserEntity)
+        private userRepo: Repository<UserEntity>
     ) { }
 
     public async seed() {
         await this.categoryRepo.createQueryBuilder().delete().execute()
         await this.articleRepo.createQueryBuilder().delete().execute()
+        await this.userRepo.createQueryBuilder().delete().execute()
         const root = this.categoryRepo.create({
             name: "root"
         })
@@ -105,5 +109,12 @@ export default class SeedingService {
         await this.articleRepo.save(metadata2)
 
         await this.articleRepo.save(metadata3)
+
+        const user = this.userRepo.create({
+            name: "lxsky",
+            password: await bcrypt.hash("1234567890", 10)
+        })
+
+        await this.userRepo.save(user);
     }
 }

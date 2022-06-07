@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/indent */
-import { Controller, Post, Body, Response, Session } from "@nestjs/common";
+import { Controller, Post, Body, Response } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { CookieOptions, Response as ServerResponse } from "express";
 import { LimitedAttempts } from "@/common/decorator/access.decorator";
 import { Protected, Public, RefreshEndpoint } from "@/common/decorator/auth.decorator";
 import { UserLoginParam, UserSession } from "@/dtos";
 import { refreshCookieName } from "./constants";
+import { ApiResult } from "@/api";
+import { Session } from "@/common/decorator/param.decorator";
 
 
 @Controller({
@@ -38,10 +40,13 @@ export class AuthController {
             response.cookie(refreshCookieName, pair.refreshToken, this.cookieOptions)
         }
 
-        return {
-            access: pair.accessToken,
-            holder: identity
-        }
+        return response.status(200).send({
+            message: "ok",
+            payload: {
+                access: pair.accessToken,
+                holder: identity
+            }
+        } as ApiResult)
     }
 
     @Post("refresh")

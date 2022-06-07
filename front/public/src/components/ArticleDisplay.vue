@@ -12,16 +12,22 @@ const displayArea = ref<HTMLDivElement>()
 
 const displayable = computed(() => {
     const html = md.render(prop.content)
-    nextTick(()=>renderMath())
+    nextTick().then(() => {
+        setTimeout(async () => {
+            await renderMath()
+        }, 5)
+    })
     return html
 })
 
 </script>
 
 <template>
-    <section class="md-region box-border 
-                    before:block before:bg-black before:p-1
+    <article class="md-region box-border 
+                    before:block before:bg-black before:p-1 before:mb-5
+                    prose prose-paper prose-xl max-w-none prose-blockquote:border-0
                     after:inline-block after:float-right after:bg-black after:p-1.5" 
+            ref="displayArea"
             v-html="displayable">
-    </section>
+    </article>
 </template>

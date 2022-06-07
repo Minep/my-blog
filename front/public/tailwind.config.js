@@ -62,9 +62,31 @@ module.exports = {
         800: '#8b6e84',
         900: '#745c6e',
       },
+    },
+    extend: {
+      typography: ({ theme }) => ({
+        paper: {
+          css: {
+            '--tw-prose-bullets': theme('colors.black'),
+            '--tw-prose-hr': theme('colors.black'),
+            '--tw-prose-pre-code': theme('colors.black'),
+          },
+        },
+      })
     }
   },
   plugins: [
+    require('@tailwindcss/typography'),
+    function ({ addUtilities }) {
+      addUtilities({
+        ".small-caps": {
+          "font-variant": "small-caps"
+        },
+        ".font-cursive": {
+          "font-family": "'Zhi Mang Xing', cursive"
+        }
+      })
+    },
     function ({ addVariant, e }) {
       addVariant('child', '& > *')
       addVariant('child-hover', '& > *:hover')

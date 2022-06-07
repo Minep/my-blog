@@ -1,24 +1,30 @@
-import { api, ApiProxyKeyOperational, createOperationalApiProxy, type ApiProxy } from "@/api";
-import type { UserIdentity } from "@/api/dtos";
+import { api, createApiProxy, createOperationalApiProxy, type ApiProxy } from "@/api";
+import type { UserIdentity, UserLoginResult } from "@/api/dtos";
+import { gatewayAdmin } from "@/api/gateways";
 import { defineStore } from "pinia";
-import { inject } from "vue";
 
 export const useIdentity = defineStore({
     id: "identity",
-    state: () : UserIdentity => ({
-        id: "",
-        name: ""
+    state: () : {
+        id: UserIdentity,
+        attempted: boolean
+    } => ({
+        id: {
+            id: "",
+            name: ""
+        },
+        attempted: false
     }),
     getters: {
         identity: (state) => ({
-            ...state
+            ...state.id
         }),
-        hasIdentity: (state) => state.id && state.name
+        hasIdentity: (state) => state.id.id && state.id.name && state.attempted
     },
     actions: {
         async login(uname: string, password: string) {
             const proxy = createOperationalApiProxy()
-            const result = await proxy(api.v1.admin.login().post<UserIdentity>({
+            const result = await proxy(api.v1.login().post<UserLoginResult>({
                 name: uname,
                 password: password
             }))
@@ -27,8 +33,29 @@ export const useIdentity = defineStore({
                 throw "login fail"
             }
 
-            this.id = result.id
-            this.name = result.name
+            this.id = { ...result.holder }
+            gatewayAdmin.defaults.headers.common["Authorization"] = `Bearer ${result.access}`
+        },
+        
+        async refresh() {
+            if (this.hasIdentity) {
+                return
+            }
+
+            this.attempted = true
+            const result = (await api.v1.admin.refresh().post<UserLoginResult>()).payload
+
+            if (!result) {
+                this.id = { name: '', id: '' }
+                return
+            }
+
+            gatewayAdmin.defaults.headers.common["Authorization"] = `Bearer ${result.access}`
+            this.id = { ...result.holder }
+        },
+
+        async logout() {
+            await api.v1.admin.logout().post();
         }
     }
 })

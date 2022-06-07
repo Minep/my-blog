@@ -1,3 +1,4 @@
 front/icons
 .dev.env
 .env
+.build-secret

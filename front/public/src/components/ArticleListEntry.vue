@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ArticleMetadata } from '@/helpers';
 import { computed } from '@vue/reactivity';
+import dayjs from 'dayjs';
 import { RouterLink } from 'vue-router';
 
 const props = defineProps<{
@@ -8,7 +9,7 @@ const props = defineProps<{
 }>()
 
 const getDateTimeString = computed(() => {
-    return new Date(props.data.time).toLocaleString()
+    return dayjs.unix(props.data.time).toDate().toLocaleString()
 })
 
 const getArticleUrl = computed(() => {
@@ -19,7 +20,7 @@ const getArticleUrl = computed(() => {
 
 <template>
     <RouterLink :to="getArticleUrl" class="block font-serif">
-        <p class="text-3xl small-caps font-bold">{{ data.title }}</p>
+        <p class="text-3xl font-bold tracking-wide">{{ data.title }}</p>
         <span class="block w-full h-[2px] bg-black mb-3"></span>
         <p class="text-lg">
             {{ data.desc }}

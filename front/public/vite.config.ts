@@ -21,8 +21,9 @@ export default defineConfig({
     vueJsx(), 
     Inspect(), 
     AppConfiger({
-      apiServer: "FRONT_PUBLIC_API_SERVER",
-      siteName: "FRONT_SITE_NAME"
+      apiServer: "SYS_BACKEND_URL",
+      siteName: "FRONT_SITE_NAME",
+      ossServer: "FRONT_OSS_SERVER"
     }),
     AutoImport({
       resolvers: [ 

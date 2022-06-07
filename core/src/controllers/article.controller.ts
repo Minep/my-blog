@@ -31,7 +31,7 @@ export default class ArticleController {
     public async publishArticle (
         @Body() article: ArticleUploadMetadata
     ) {
-        this.articleService.save(article)
+        await this.articleService.save(article)
     }
 
     @Post("admin/articles/:id")
@@ -39,14 +39,14 @@ export default class ArticleController {
         @Param("id", ParseIntPipe) id: number,
         @Body() article: ArticleUploadMetadata
     ) {
-        this.articleService.save(article, id)
+        await this.articleService.save(article, id)
     }
 
     @Delete("admin/articles/:id")
     public async deleteArticle (
         @Param("id", ParseIntPipe) id: number
     ) {
-        this.articleService.delete(id)
+        await this.articleService.delete(id)
     }
 
     @Get("admin/articles")

@@ -2,17 +2,22 @@ version: '3'
 
 services:
   lxsky-mysql:
-    image: mariadb
+    image: ${CR_LOCATION}/lxsky-mysql:${IMG_TAG}
+    build: 
+      context: .
+      dockerfile: maria.dockerfile
     environment:
-      - MARIADB_ROOT_PASSWORD=root
-      - MARIADB_DATABASE=lunaixskys
-  
+      - MARIADB_ROOT_PASSWORD=${DB_SQL_PASSWORD}
+      - MARIADB_DATABASE=${DB_SQL_APP_DB}
+
   lxsky-redis:
+    image: ${CR_LOCATION}/lxsky-redis:${IMG_TAG}
     build: 
       context: .
       dockerfile: redis.dockerfile
   
   lxsky-core:
+    image: ${CR_LOCATION}/lxsky-core:${IMG_TAG}
     build:
       context: core/
       dockerfile: dockerfile
@@ -23,8 +28,7 @@ services:
       - .env
 
   lxsky-frontend:
+    image: ${CR_LOCATION}/lxsky-frontend:${IMG_TAG}
     build: 
       context: front/public
       dockerfile: dockerfile
-    env_file:
-      - .env

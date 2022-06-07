@@ -27,11 +27,18 @@ export class ArticleMetadataEntity {
         length: 150
     })
     title: string
+
+    @Column({
+        nullable: true
+    })
+    categoryId: number
     
     @ManyToOne(() => CategoryEntity, (category) => category.articles, {
         onDelete: "SET NULL",
-        nullable: true
+        nullable: true,
+        cascade: true
     })
+    @JoinColumn({ name: "categoryId" })
     category: CategoryEntity
     
     @Column("text")
@@ -53,7 +60,8 @@ export class ArticleMetadataEntity {
     author: UserEntity
 
     @OneToOne(() => ArticleEntity, {
-        onDelete: "CASCADE"
+        onDelete: "CASCADE",
+        cascade: true
     })
     @JoinColumn()
     content: ArticleEntity

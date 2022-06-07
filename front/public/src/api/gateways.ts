@@ -13,3 +13,8 @@ export const gatewayAdmin = axios.create({
     ...gatewayConfig,
     withCredentials: true
 })
+
+export const gatewayAliOSS = axios.create({
+    ...gatewayConfig,
+    baseURL: appConfig.ossServer
+})

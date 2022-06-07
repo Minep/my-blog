@@ -7,12 +7,15 @@ import {
 } from "@element-plus/icons-vue"
 
 import { ApiProxyKeyOperational, type ApiProxy, api } from '@/api';
-import type { ArticlePageResult, ArticleSummary } from '@/api/dtos';
+import type { ArticlePageResult, ArticleSummary, ArticleUploadMetadata } from '@/api/dtos';
 import usePagination from '@/composables/usePagination';
-import { inject, onMounted, watch } from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import { computed } from "@vue/reactivity";
 import type { ItemLoadingResolver } from "@/helpers";
 import AddDocument from "@/components/icons/AddDocument.vue";
+import { ElMessage, ElMessageBox } from 'element-plus'
+import UploadArticlePopup from "@/components/admin/UploadArticlePopup.vue"
+import dayjs from "dayjs"
 
 const props = defineProps<{
     queryFilter: Record<string, any>
@@ -39,7 +42,8 @@ const {
     pageSize,
     currentPage,
     loading,
-    totalCount
+    totalCount,
+    refresh
 } = usePagination<ArticlePageResult, ArticleSummary>("data", "count", resolver)
 
 onMounted(() => {
@@ -49,6 +53,27 @@ onMounted(() => {
 watch(filters, () => {
     currentPage.value = 1
 })
+
+const addArticleDialogue = ref(false)
+
+watch(addArticleDialogue, (newVal, old) => {
+    console.log(newVal)
+    if (!newVal && (old !== newVal)) {
+        refresh()
+    }
+})
+
+const deleteArticle = (article: ArticleSummary) => {
+    ElMessageBox.confirm(`确认删除文章 ${article.title} (id = ${article.id}) ？`,{
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+        })
+        .then(() => {
+            proxy(api.v1.admin.article(article.id).delete())
+                .then(() => refresh())
+        })
+}
 
 </script>
 
@@ -63,7 +88,7 @@ watch(filters, () => {
             <ElTableColumn prop="date" label="发表日期" width="150px">
                 <template #default="scope">
                     <div>
-                        {{ new Date(scope.row.date).toLocaleString() }}
+                        {{ dayjs.unix(scope.row.date).toDate().toLocaleString() }}
                     </div>
                 </template>
             </ElTableColumn>
@@ -81,7 +106,7 @@ watch(filters, () => {
                 <template #default="scope">
                     <ElButtonGroup>
                         <ElButton type="primary" :icon="Edit" size="small"/>
-                        <ElButton type="danger" :icon="Delete" size="small"/>
+                        <ElButton type="danger" :icon="Delete" size="small" @click="deleteArticle(scope.row)"/>
                     </ElButtonGroup>
                 </template>
             </ElTableColumn>
@@ -90,7 +115,7 @@ watch(filters, () => {
     <div class="flex justify-between">
         <div class="flex">
             <ElButton size="large" class="child:!text-white" type="success" :icon="AddDocument"
-                @click="emits('new-article')">新文章</ElButton>
+                @click="addArticleDialogue = true">新文章</ElButton>
         </div>
         <ElPagination
             v-model:currentPage="currentPage"
@@ -99,5 +124,6 @@ watch(filters, () => {
             :total="totalCount"
             background/>
     </div>
+    <UploadArticlePopup v-model="addArticleDialogue"/>
 </div>
 </template>

@@ -10,7 +10,6 @@ export default class SiteStatisticsController {
         private siteStatistics: SiteStatisticsService
     ) { }
 
-    @Public()
     @Get("admin/stats")
     public async getStats() {
         return this.siteStatistics.getAggregated()

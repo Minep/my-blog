@@ -48,15 +48,21 @@ export class AuthGuard implements CanActivate {
             throw this.authFailException()
         }
 
-        // is this token valid?
-        const token = (await this.jwtService.verifyAsync(auth)) as UserToken
-        if (!token) {
-            throw this.authFailException()
-        }
+        try {
+            // is this token valid?
+            const token = (await this.jwtService.verifyAsync(auth)) as UserToken
+            if (!token) {
+                throw ''
+            }
 
-        // is this token has the corresponding session?
-        const userSession = await this.session.tryGetAsync(token.id)
-        if (!userSession) {
+            // is this token has the corresponding session?
+            const userSession = await this.session.tryGetAsync(token.id)
+            if (!userSession) {
+                throw ''
+            }
+            request.user = userSession;
+        }
+        catch {
             throw this.authFailException()
         }
 

@@ -20,6 +20,8 @@ export function makeServer() {
             this.namespace = "v1"
             this.timing = 1000
 
+            this.passthrough();
+
             this.get("/articles/:aid", (_, request) => {
                 return createResponse<Article>(200, "ok", {
                     id: request.params.aid,
@@ -35,12 +37,12 @@ export function makeServer() {
                 })
             })
 
-            this.post("login", (_, req) => {
-                return createResponse<UserIdentity>(200, 'ok', {
-                    name: "lunaixsky",
-                    id: "0"
-                })
-            })
+            // this.post("login", (_, req) => {
+            //     return createResponse<UserIdentity>(200, 'ok', {
+            //         name: "lunaixsky",
+            //         id: "0"
+            //     })
+            // })
 
             this.put("/admin/articles", (_, req) => {
                 return createResponse(200, 'ok')
@@ -54,23 +56,23 @@ export function makeServer() {
                 })
             })
 
-            this.get("/articles", (_, req) => {
-                const result = []
-                for (let index = 0; index < 5; index++) {
-                    result.push({
-                        id: Math.floor(Math.random() * 1000).toString(),
-                        title: 'Lorem ipsum dolor sit amet',
-                        desc: 'Aliquam et leo elementum, vehicula ante a, fringilla massa. Suspendisse vel pretium tellus. Sed volutpat, turpis a ultricies sollicitudin, est mauris mattis metus, eget sodales est nisi sed orci. Aliquam aliquet tincidunt nisl eget porttitor. Nunc eleifend ultrices est quis eleifend.',
-                        time: 2132121,
-                        pinned: true,
-                        category: {
-                            id: "222",
-                            name: '分类一'
-                        }
-                    })
-                }
-                return createResponse<ArticleMetadata[]>(200, "ok", result)
-            })
+            // this.get("/articles", (_, req) => {
+            //     const result = []
+            //     for (let index = 0; index < 5; index++) {
+            //         result.push({
+            //             id: Math.floor(Math.random() * 1000).toString(),
+            //             title: 'Lorem ipsum dolor sit amet',
+            //             desc: 'Aliquam et leo elementum, vehicula ante a, fringilla massa. Suspendisse vel pretium tellus. Sed volutpat, turpis a ultricies sollicitudin, est mauris mattis metus, eget sodales est nisi sed orci. Aliquam aliquet tincidunt nisl eget porttitor. Nunc eleifend ultrices est quis eleifend.',
+            //             time: 2132121,
+            //             pinned: true,
+            //             category: {
+            //                 id: "222",
+            //                 name: '分类一'
+            //             }
+            //         })
+            //     }
+            //     return createResponse<ArticleMetadata[]>(200, "ok", result)
+            // })
 
             this.get("/admin/category/:cid", (_, req) => {
                 return createResponse<Category>(200, "ok", {

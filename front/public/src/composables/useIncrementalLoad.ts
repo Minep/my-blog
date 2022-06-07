@@ -5,19 +5,20 @@ import { ref, type Ref, watch, onMounted, watchEffect } from "vue";
 
 export default function useIncrementalLoad<T>(
     scrollable: MaybeRef<HTMLElement | Document | undefined | null>, 
-    resolver: ItemLoadingResolver<T[]>
+    resolver: ItemLoadingResolver<T[]>,
+    offsetKey: keyof(T) | '' = ""
 ) {
     const { arrivedState, isScrolling } = useScroll(scrollable)
 
     const loading = ref(false)
     const hasMore = ref(true)
     const data: Ref<T[]> = ref([])
-    const offset = ref(0)
+    const offset = ref()
     const limit = ref(10)
 
     const reset = () => {
         data.value = []
-        offset.value = 0
+        offset.value = offsetKey ? '' : 0
         load()
     }
 
@@ -27,8 +28,13 @@ export default function useIncrementalLoad<T>(
         const result = await resolver(offset.value, limit.value)
         
         if (result) {
-            hasMore.value = result.length > 0
-            offset.value += result.length
+            hasMore.value = result.length >= limit.value
+            if (offsetKey) {
+                offset.value = result[result.length - 1][offsetKey]
+            }
+            else {
+                offset.value += result.length
+            }
             data.value.push(...result)
         }
         

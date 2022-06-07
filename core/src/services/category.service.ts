@@ -18,7 +18,7 @@ export default class CategoryService {
         if (cid === 0) {
             const roots = (await this.categoryRepo.find({
                 where: {
-                    parent: IsNull()
+                    parentId: IsNull()
                 }
             })) ?? []
 
@@ -46,7 +46,21 @@ export default class CategoryService {
     }
 
     public async getCategoryById(cid: number): Promise<Category> {
-        const category: CategoryEntity = await this.categoryRepo.findOne(cid, {
+        if (cid === 0) {
+            const roots = (await this.categoryRepo.find({
+                where: {
+                    parentId: IsNull()
+                }
+            })) ?? []
+
+            return {
+                id: "0",
+                name: "主目录",
+                children: roots.map(child => CategoryMetadata.createFrom(child))
+            }
+        }
+
+        const category: CategoryEntity = await this.categoryRepo.findOne({
             where: {
                 id: cid
             },
@@ -82,7 +96,7 @@ export default class CategoryService {
             })
         }
         catch {
-            throw fail(`delete(cid=${cid})`)
+            throw failed(`delete(cid=${cid})`)
         }
     }
 }

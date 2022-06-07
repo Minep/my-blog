@@ -9,6 +9,7 @@ import { CachingModule } from './caching/caching.module';
 import config from './config';
 import ArticleController from './controllers/article.controller';
 import CategoryController from './controllers/category.controller';
+import ImageController from './controllers/img.controller';
 import SiteStatisticsController from './controllers/stats.controller';
 import { ArticleEntity, ArticleMetadataEntity } from './entities/article.entity';
 import { CategoryEntity } from './entities/category.entity';
@@ -66,7 +67,8 @@ import SiteStatisticsService from './services/stats.service';
   controllers: [
     CategoryController,
     ArticleController,
-    SiteStatisticsController
+    SiteStatisticsController,
+    ImageController
   ],
   providers: [
     {

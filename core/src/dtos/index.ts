@@ -33,7 +33,7 @@ export class ArticleSummary {
         return {
             id: entity.id.toString(),
             title: entity.title,
-            category: entity.category.name,
+            category: entity.category?.name ?? "主分类",
             date: entity.date,
             visible: entity.visible,
             pinned: entity.pinned
@@ -79,6 +79,12 @@ export class CategoryMetadata {
     name: string;
 
     static createFrom(category: CategoryEntity): CategoryMetadata {
+        if (!category) {
+            return {
+                id: '0',
+                name: '主分类'
+            }
+        }
         return {
             id: category.id.toString(),
             name: category.name
@@ -96,7 +102,10 @@ export class CategoryLevel {
         return {
             parent: (
                 !category.parent 
-                    ? undefined 
+                    ? {
+                        id: "0",
+                        name: "主目录"
+                    } 
                         : CategoryMetadata.createFrom(category.parent)
             ),
             current: CategoryMetadata.createFrom(category),

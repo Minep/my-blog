@@ -8,6 +8,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    "allowSyntheticDefaultImports": true,
     "types": [
       "markdown-it", 
       "markdown-it-container", 

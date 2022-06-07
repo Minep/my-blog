@@ -1,10 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
-import OSS from "ali-oss"
+import OSS = require("ali-oss")
 import { OSSFileMetadata, PostSignature } from "@3rd/oss/interfaces/oss.interface";
 import { OSSClientOptions, OSS_CONFIG } from "./interfaces/oss-config.interface";
 import * as Crypto from "crypto"
 import { Callback, PostObjectCredential } from "./interfaces/oss.interface";
 import { HostedPicture } from "@/dtos";
+
 
 @Injectable()
 export class OSSClientService {
@@ -37,10 +38,10 @@ export class OSSClientService {
         const credentials: Record<string, PostSignature> = {}
         const callbackStr = callback ? this.toCallbackString(callback) : undefined
         files.forEach(({ name, path, type, maxSize }) => {
-            if (!type) {
-                throw new Error("Must specify file type when construct credential for upload")
-            }
-            const policy = this.getUploadPolicy(`${path}/${name}`, type, maxSize, callbackStr)
+            // if (!type) {
+            //     throw new Error("Must specify file type when construct credential for upload")
+            // }
+            const policy = this.getUploadPolicy(`${name}`, type, maxSize, callbackStr)
             credentials[name] = this.calculatePostSignature(policy)
         });
         return {
@@ -104,7 +105,7 @@ export class OSSClientService {
             expiration: expire,
             conditions: [
                 { bucket: this._options.bucket },
-                { "Content-Type": "image/jpeg"},
+                //["starts-with", "Content-Type", "image/"],
                 ["eq", "$key", filename],
                 ["content-length-range", 1, maxSize || 1024 * 1024 * 1024]
             ] as any[]

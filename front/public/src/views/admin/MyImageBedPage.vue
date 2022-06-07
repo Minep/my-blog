@@ -1,18 +1,23 @@
 <script setup lang="ts">
 
-import { onMounted, reactive, ref, watchEffect } from 'vue';
+import { inject, onMounted, reactive, ref, watchEffect } from 'vue';
 import {
     Upload,
     Search,
     Plus
 } from "@element-plus/icons-vue"
-import type { ItemLoadingResolver } from '@/helpers';
+import type { HostedPicture, ItemLoadingResolver } from '@/helpers';
 import AsyncContent from '@/components/AsyncContent.vue';
 import useIncrementalLoad from '@/composables/useIncrementalLoad';
 import { useNotification } from '@/stores/notifications';
-import { ElLoading } from 'element-plus';
+import { ElLoading, ElMessage, ElMessageBox } from 'element-plus';
 import "element-plus/es/components/loading/style/css"
 import usePageTitle from '@/composables/usePageTitle';
+import { useUploadImage } from '@/composables/useUploadImage';
+import type { UploadFile } from "element-plus/es/components/upload/src/upload"
+import { api, ApiProxyKeyOperational, type ApiProxy } from '@/api';
+import { useClipboard } from "@vueuse/core"
+
 
 const keyword = ref("")
 
@@ -21,12 +26,14 @@ function getName(url: string) {
     return val.split('?', 1)[0]
 }
 
+const proxy = inject(ApiProxyKeyOperational) as ApiProxy
+
 const elPictureShowcase = ref<HTMLElement>()
 
-const resolver: ItemLoadingResolver<string[]> = async (offset, limit) => {
-    // TODO: Integrate with OSS
-    await (new Promise((resolve) => setTimeout(() => resolve(null), 2000)))
-    return []
+const resolver: ItemLoadingResolver<HostedPicture[]> = async (offset, limit) => {
+    return (await proxy(api.v1.admin.img().get<HostedPicture[]>({
+        kw: keyword.value || undefined
+    }))) ?? []
 }
 
 const notification = useNotification()
@@ -42,7 +49,7 @@ usePageTitle("管理图床")
 
 const uploadContext: {
     shown: boolean;
-    fileList: File[];
+    fileList: UploadFile[];
     currentProgress: string;
 } = reactive({
     shown: false,
@@ -71,6 +78,11 @@ const confirmResetUpload = () => {
     })
 }
 
+const {
+    progress,
+    doUpload
+} = useUploadImage()
+
 const confirmUpload = () => {
 
     const loading = ElLoading.service({
@@ -81,34 +93,42 @@ const confirmUpload = () => {
     })
 
     const unwatchProgress = watchEffect(() => {
-        loading.setText(uploadContext.currentProgress)
+        loading.setText(progress.value)
     })
 
     new Promise<void>((resolve, reject) => {
-        // TODO: Integrate with OSS
-        setTimeout(() => {
-            uploadContext.currentProgress = "Hello"
-            setTimeout(() => reject("just error!"), 1000)
-        }, 2000)
+        doUpload(uploadContext.fileList.map(v => v.raw!)).then(resolve).catch(reject)
     })
         .then(() => {
-            notification.push({
-                level: "success",
-                message: "全部上传成功"
-            })
+            notification.success("全部上传成功")
             loading.close()
             confirmResetUpload()
         })
         .catch((err) => {
-            notification.push({
-                level: "error",
-                message: `上传失败（${err}）`
-            })
+            notification.error(`上传失败（${err}）`)
             loading.close()
         })
         .finally(() => {
             unwatchProgress()
         })
+}
+
+const {
+    copy,
+    copied,
+    isSupported
+} = useClipboard()
+
+const getMarkdownReference = (img: HostedPicture) => {
+    const md = `![${img.name}](${img.url}_main)`
+    if (isSupported) {
+        copy(md).then(() => {
+            notification.inform("已复制为Markdown");
+        })
+    }
+    else {
+        ElMessageBox.confirm(md, "图片的Markdown引用")
+    }
 }
 
 </script>
@@ -124,14 +144,16 @@ const confirmUpload = () => {
     </section>
     <AsyncContent class="pb-10" :ready="!loading" incremental>
         <section class="w-full columns-4 pt-5 my-8">
-            <div v-for="url in data" class="mt-5 py-4 px-1">
-                <div class="h-fit w-full rounded-md relative hover:scale-[1.05] transition-transform transform-gpu">
+            <div v-for="pic in data" class="mt-5 py-4 px-1">
+                <div class="h-fit w-full rounded-md relative hover:scale-[1.05] 
+                            transition-transform transform-gpu
+                            cursor-pointer" @click="getMarkdownReference(pic)">
                     <p class="absolute top-0 left-0 text-white bg-black bg-opacity-50 py-1 px-2 rounded-md
                             text-xs max-w-[70%] truncate hover:break-normal hover:bg-opacity-80
                             hover:whitespace-normal">
-                        {{ getName(url) }}
+                        {{ pic.name }}
                     </p>
-                    <img class="w-full object-cover rounded-md shadow-md" :src="url">
+                    <img class="w-full object-cover rounded-md shadow-md" :src="`${pic.url}_snapshot`">
                 </div>
             </div>
         </section>
@@ -144,6 +166,7 @@ const confirmUpload = () => {
             action=""
             :auto-upload="false"
             :file-list="uploadContext.fileList"
+            multiple
             list-type="picture-card">
             <ElIcon><Plus/></ElIcon>
         </ElUpload>

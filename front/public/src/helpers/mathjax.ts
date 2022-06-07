@@ -1,12 +1,14 @@
 declare global {
     interface Window {
         renderKaTexMath: (el: HTMLElement) => void;
-        MathJax: any
+        MathJax: {
+            typesetPromise: () => Promise<void>
+        }
     }
 }
 
-export function renderMath () {
+export async function renderMath () {
     if (window.MathJax) {
-        window.MathJax.typeset()
+        await window.MathJax.typesetPromise()
     }
 }

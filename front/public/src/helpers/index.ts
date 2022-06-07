@@ -37,4 +37,20 @@ export function mulberry32(a: number) {
     }
 }
 
-export type ItemLoadingResolver<T> = (offset: number, limit: number) => Promise<T | undefined>
+export type ItemLoadingResolver<T> = (offset: number | string, limit: number) => Promise<T | undefined>
+
+export interface PostSignature {
+    signature: string,
+    policy: string
+}
+
+export interface PostObjectCredential {
+    accessKeyId: string
+    credentials: Record<string, PostSignature>
+    callback?: string
+}
+
+export interface HostedPicture {
+    name: string;
+    url: string
+}

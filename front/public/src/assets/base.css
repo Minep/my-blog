@@ -36,16 +36,6 @@
     }
 }
 
-@layer utilities {
-    .small-caps {
-        font-variant: small-caps;
-    }
-
-    .font-cursive {
-        font-family: 'Zhi Mang Xing', cursive;
-    }
-}
-
 #app {
     @apply min-h-screen
 }

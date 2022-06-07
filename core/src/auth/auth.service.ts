@@ -71,7 +71,10 @@ export class AuthService {
         pair: TokenPair
         identity: UserSession
     }> {
-        const user = await this.userRepository.findOne(session.id, {
+        const user = await this.userRepository.findOne({
+            where: {
+                id: session.id
+            },
             select: ["id", "name"]
         })
 

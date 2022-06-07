@@ -6,6 +6,21 @@ import {
     Document,
     Picture
 } from '@element-plus/icons-vue'
+import { useIdentity } from '@/stores/identity';
+import { useNotification } from '@/stores/notifications';
+
+const identity = useIdentity()
+const router = useRouter()
+const notification = useNotification()
+
+const doLogout = () => {
+    identity.logout().then(() => {
+        router.go(0)
+    })
+    .catch((err) => {
+        notification.error(`无法登出：${err}`)
+    })
+}
 
 </script>
 
@@ -27,6 +42,9 @@ import {
             <ElMenuItem index="/admin/my-imgbed" class="space-x-2">
                 <ElIcon><Picture/></ElIcon>
                 我的图床
+            </ElMenuItem>
+            <ElMenuItem index="" @click="doLogout()" class="space-x-2 mt-10 ">
+                <p class="text-red-500">退出登录</p>
             </ElMenuItem>
         </ElMenu>
     </ElAside>

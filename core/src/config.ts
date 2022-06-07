@@ -21,7 +21,8 @@ export default () => ({
         lockOutTime: 5,
         maxAttempts: 5,
         sessionExpire: 1800,
-        refreshExpire: 3600
+        refreshExpire: 3600,
+        jwtSecret: process.env["JWT_SECRETE"] || ""
     },
     oss: {
         region: process.env["OSS_REGION"],

@@ -6,11 +6,14 @@ import type { ApiResponse } from "./response"
 export const endpointsV1 = {
     article: (aid?: string) => publicEndpoint(`/v1/articles/${aid ?? ''}`),
     category: (cid?: string) => publicEndpoint(`/v1/category/${cid ?? ''}`),
+    login: () => publicEndpoint(`/v1/login`),
     admin: {
-        login: () => adminEndpoint(`/v1/login`),
+        logout: () => adminEndpoint(`/v1/logout`),
+        refresh: () => adminEndpoint(`/v1/refresh`),
         stats: () => adminEndpoint(`/v1/admin/stats`),
         category: (cid?: string) => adminEndpoint(`/v1/admin/category/${cid ?? ''}`),
-        article: (aid?: string) => adminEndpoint(`/v1/admin/articles/${aid ?? ''}`)
+        article: (aid?: string) => adminEndpoint(`/v1/admin/articles/${aid ?? ''}`),
+        img: () => adminEndpoint(`/v1/admin/img`),
     }
 }
 

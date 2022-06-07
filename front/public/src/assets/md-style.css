@@ -1,6 +1,6 @@
 .md-region {
     .tip {
-        @apply bg-mint-600 bg-opacity-40 p-5 my-5;
+        @apply bg-mint-600 bg-opacity-40 px-5 py-2 my-5;
 
         &> h2:first-child {
             @apply block text-base italic text-mint-900 font-bold mb-1
@@ -8,18 +8,22 @@
     }
     
     .aside {
-        @apply bg-vodka-600 bg-opacity-40 p-5 my-5;
+        @apply bg-vodka-600 bg-opacity-40 px-5 py-2 my-5;
         &> h2:first-child {
             @apply block text-base italic text-vodka-900 font-bold mb-1
         }
     }
     
     .important {
-        @apply bg-thistle-500 bg-opacity-40 p-5 my-5;
+        @apply bg-thistle-500 bg-opacity-40 px-5 my-5;
         
         &> h2:first-child {
             @apply block text-base italic text-thistle-900 font-bold mb-1
         }
+    }
+
+    .MathJax {
+        @apply mx-1;
     }
 }
 
@@ -30,8 +34,8 @@
 .md-region {
     &> h1 {
         counter-increment: h1counter;
-        counter-reset: h2counter;
-        @apply text-2xl mt-12 mb-1 text-center small-caps font-bold;
+        counter-reset: h2counter 1;
+        @apply text-2xl mt-12 mb-1 text-center font-bold;
 
         &::before {
             content: counter(h1counter) '. ';
@@ -40,7 +44,7 @@
 
     &> h2 {
         counter-increment: h2counter;
-        counter-reset: h3counter;
+        counter-reset: h3counter 1;
         @apply text-xl mt-8 mb-1 font-bold;
         
         &::before {
@@ -50,7 +54,7 @@
 
     &> h3 {
         counter-increment: h3counter;
-        counter-reset: h4counter;
+        counter-reset: h4counter 1;
         @apply text-lg mt-4 mb-1 font-bold;
 
         &::before {
@@ -72,10 +76,14 @@
     }
 
     &> blockquote {
-        @apply italic bg-paper-300 bg-opacity-60 p-5 my-5 px-10
+        @apply italic bg-paper-300 bg-opacity-60 px-5 py-2 my-5 px-10
     }
 
-    &> svg, &> img {
-        @apply mx-auto my-10
+    & svg, & img {
+        @apply mx-auto my-5 text-center
+    }
+
+    & pre {
+        @apply my-2 bg-paper-700 bg-opacity-20 p-5;
     }
 }

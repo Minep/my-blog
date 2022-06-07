@@ -1,6 +1,6 @@
 
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsNumber, IsOptional, IsPositive, Length } from "class-validator";
+import { IsArray, IsBoolean, isNumber, IsNumber, IsNumberString, IsOptional, IsPositive, Length } from "class-validator";
 
 export class CategoryUpdateParam {
     @Length(1, 80)
@@ -21,20 +21,25 @@ export class UserLoginParam {
 
 export class ArticleUploadMetadata {
     
-    @Type(() => Number)
-    @Transform((params) => parseInt(params.value))
+    @Type(() => String)
+    @IsNumber()
+    @Transform((params) => {
+        return parseInt(params.value)
+    })
     category: number;
 
     @Type(() => String)
+    @Length(0)
     content: string;
     
     @Length(1, 150)
     title: string;
 
-    @Length(1, 500)
+    @Length(0, 500)
     desc: string;
     
     @Type(() => Boolean)
+    @IsBoolean()
     pinned: boolean;
 
     @IsOptional()

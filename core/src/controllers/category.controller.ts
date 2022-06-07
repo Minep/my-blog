@@ -36,7 +36,6 @@ export default class CategoryController {
     }
 
     @Put("admin/category/:id")
-    @Public()
     public async putCategory(
         @Param("id", ParseIntPipe) id: number,
         @Body() param: CategoryUpdateParam

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ArticleMetadata, ItemLoadingResolver } from '@/helpers';
-import { ref, computed, reactive, watch, watchEffect, onMounted, inject } from 'vue';
+import { ref, computed, reactive, watch, watchEffect, onMounted, inject, nextTick } from 'vue';
 import AsyncContent from './AsyncContent.vue';
 import ArticleList from './ArticleList.vue';
 import { api, ApiProxyKey, type ApiProxy } from '@/api';
@@ -27,15 +27,18 @@ const {
     hasMore
 } = useIncrementalLoad(document, fetchArticle)
 
-onMounted(() => {
-    reset()
-})
 
 const requestParam = computed(() => props.params)
 
-watch(requestParam, () => {
-    reset()
+onMounted(() => {
+    if (!requestParam.value) {
+        reset()
+    }
+    nextTick(() => watch(requestParam, () => {
+        reset()
+    }))
 })
+
 
 </script>
 

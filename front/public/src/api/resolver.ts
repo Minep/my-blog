@@ -15,16 +15,23 @@ export async function resolve<T>(
                 data: data
             })
     
-            return response.data as ApiResponse<T>
+            return {
+                code: response.status,
+                ...response.data
+            } as ApiResponse<T>
         }
         catch(reason: any) {
             console.log(reason)
             if (reason.response) {
-                throw reason.response.data as ApiResponse<T>
+                throw {
+                    code: reason.response.status,
+                    ...reason.response.data
+                } as ApiResponse<T>
             }
             
             throw {
                 message: "Unknown Error",
+                code: 0
             } as ApiResponse<T>
         }
     }

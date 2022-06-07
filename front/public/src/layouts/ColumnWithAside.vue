@@ -25,7 +25,7 @@ watchEffect(() => {
                 <slot name="aside"/>
             </div>
         </section>
-        <section class="grow h-fit px-10 box-border">
+        <section class="grow h-fit px-12 box-border">
             <slot name="column"/>
         </section>
     </div>
@@ -33,7 +33,7 @@ watchEffect(() => {
 
 <style>
 .aside-container {
-    @apply w-1/3 h-fit;
+    @apply w-2/5 h-fit;
 }
 .affix {
     @apply fixed left-0 top-0 p-10;

@@ -22,6 +22,9 @@
       "@dto/*": ["src/dtos/*"],
       "@3rd/*": ["src/third-party/*"],
       "@/*": ["src/*"],
-    }
+    },
+    "types": [
+      "ali-oss"
+    ]
   }
 }

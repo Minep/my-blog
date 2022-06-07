@@ -4,6 +4,11 @@ export interface CategoryUpdateParam extends Omit<CategoryMetadata, "id"> {
 
 }
 
+export interface UserLoginResult {
+    access: string;
+    holder: UserIdentity;
+}
+
 export interface UserIdentity {
     name: string;
     id: string;

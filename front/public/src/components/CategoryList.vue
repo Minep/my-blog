@@ -8,7 +8,7 @@ const props = defineProps<{
 </script>
 
 <template>
-<ul class="pl-5 pr-20 space-y-4 max-w-[80%]">
+<ul class="pl-5 pr-20 space-y-8 max-w-[80%]">
     <li v-for="v in items" :key="v.id">
         <CategoryListEntryVue :data="v"/>
     </li>

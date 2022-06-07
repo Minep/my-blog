@@ -47,6 +47,7 @@ export default function usePagination<T, U>(dataKey: keyof T, totalKey: keyof T,
         loading,
         totalCount,
         currentPage,
-        pageSize
+        pageSize,
+        refresh: doFetch
     }
 }

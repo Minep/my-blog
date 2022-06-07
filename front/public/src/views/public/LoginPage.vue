@@ -22,7 +22,9 @@ function onLogin() {
     identity
         .login(loginFormData.userName, loginFormData.password)
             .then(() => {
-                router.push("/admin")
+                setTimeout(() => router.push({
+                    path: "/admin"
+                }), 500)
             })
             .finally(() => {
                 onAction.value = false

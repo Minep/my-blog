@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  lxsky-mysql:
+    volumes:
+      - /var/webapp/db-lxsky:/var/lib/mysql
+      

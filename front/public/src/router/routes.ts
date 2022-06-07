@@ -1,3 +1,4 @@
+import NotFoundVue from "@/views/NotFound.vue";
 import type { RouteRecordRaw } from "vue-router"
 
 const routes: RouteRecordRaw[] = [
@@ -19,7 +20,8 @@ const routes: RouteRecordRaw[] = [
           path: 'category',
           component: () => import("@/views/public/CategoryPage.vue"),
           props: route => ({ id: route.query.id ?? "0"})
-        }
+        },
+        { path: '/:pathMatch(.*)*', component: NotFoundVue }
       ]
     },
     {
