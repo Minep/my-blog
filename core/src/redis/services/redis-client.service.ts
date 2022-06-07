@@ -5,7 +5,8 @@ import { RedisClientOptions, REDIS_CONFIG, RedisSetOptions } from "@redis/interf
 @Injectable()
 export class RedisClientService {
 
-    private redis: Redis
+    // @ts-ignore
+    private redis: Redis.Redis
 
     constructor (
     @Inject(REDIS_CONFIG)
