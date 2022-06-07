@@ -16,7 +16,7 @@ jobs:
           password: ${{ secrets.GITLAB_TOKEN }}
       -
         name: Exporting build environment
-        run: printf "${{ secrets.BUILD_ENV }}" > .env && cat .env && exit 1
+        run: printf "${{ secrets.BUILD_ENV }}" > .env
       -
         name: Build and push Containers
         run: chmod +x ./run.sh && sudo ./run.sh build
